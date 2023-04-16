@@ -29,7 +29,7 @@ get_citations_pubmed <- function(
   while (j < length(pmid_chunks)) {
     pmid_chunk <- pmid_chunks[[as.character(j)]]
     lgr::lgr$info(
-      paste0('Processing chunk ',j,' with ',length(pmid_chunk),'PMIDS'))
+      paste0('Processing chunk ',j,' with ',length(pmid_chunk),' PMIDS'))
     pmid_string <- paste(pmid_chunk,collapse = " ")
     res <- RISmed::EUtilsGet(
       RISmed::EUtilsSummary(
@@ -75,12 +75,13 @@ get_citations_pubmed <- function(
 
 }
 
-get_literature <- function(literature_df) {
+get_literature <- function(
+    literature_df, chunk_size = 100) {
 
   stopifnot(!is.na(literature_df))
   stopifnot(is.data.frame(literature_df))
   assertable::assert_colnames(
-    literature_df, c("source","source_id"),
+    literature_df, c("source","source_id", "source_entity"),
     quiet = T)
 
   pubmed_source_ids <- literature_df |>
@@ -95,7 +96,7 @@ get_literature <- function(literature_df) {
 
   if (NROW(pubmed_source_ids) > 0) {
     pubmed_source_ids <- get_citations_pubmed(
-      pmid = pubmed_source_ids$source_id, chunk_size = 100) |>
+      pmid = pubmed_source_ids$source_id, chunk_size = chunk_size) |>
       dplyr::rename(
         name = citation,
       ) |>
@@ -124,8 +125,7 @@ get_literature <- function(literature_df) {
 
   all_literature <- pubmed_source_ids |>
     dplyr::select(source, source_id,
-                  #evidence_id,
-                  dplyr::everything())
+                  source_entity, name, link)
 
   if(NROW(other_source_ids) > 0){
     all_literature <-

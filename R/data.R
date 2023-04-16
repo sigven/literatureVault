@@ -3,7 +3,7 @@
 #' A small dataset with identifiers and links to literature references
 #' of relevance for precision cancer medicine (biomarkers etc.)
 #'
-#' @format \bold{litvault} - A data frame with 14,640 rows and 3 columns:
+#' @format \bold{litvault} - A data frame with 8,371 rows and 3 columns:
 #' \itemize{
 #'   \item{source_id} - {source identifier (e.g. PMID)}
 #'   \item{source} - {type of source (PubMed, clinicaltrials.gov, FDA etc)}
