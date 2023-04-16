@@ -13,18 +13,23 @@ get_citations_pubmed <- function(
     pmid,
     chunk_size = 100){
 
+
+  ## set logging layout
+  lgr::lgr$appenders$console$set_layout(
+    lgr::LayoutFormat$new(timestamp_fmt = "%Y-%m-%d %T"))
+
   ## make chunk of maximal 400 PMIDs from input array (limit by EUtils)
   pmid_chunks <- chunk(
     pmid, ceiling(length(pmid)/chunk_size))
   j <- 0
   all_citations <- data.frame()
-  cat('Retrieving PubMed citations for PMID list, total length', length(pmid))
-  cat('\n')
+  lgr::lgr$info(
+    paste0('Retrieving PubMed citations for PMID list, total length: ',
+           length(pmid)))
   while (j < length(pmid_chunks)) {
     pmid_chunk <- pmid_chunks[[as.character(j)]]
-    cat(unlist(pmid_chunk),"\n")
-    cat('Processing chunk ',j,' with ',length(pmid_chunk),'PMIDS')
-    cat('\n')
+    lgr::lgr$info(
+      paste0('Processing chunk ',j,' with ',length(pmid_chunk),'PMIDS'))
     pmid_string <- paste(pmid_chunk,collapse = " ")
     res <- RISmed::EUtilsGet(
       RISmed::EUtilsSummary(

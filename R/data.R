@@ -12,4 +12,4 @@
 #'   \item{link} - {HTML link of reference}
 #' }
 #'
-"litvault"
+"vault"
