@@ -1,0 +1,39 @@
+Package: literatureVault
+Type: Package
+Title: Biomedical literature reference data for precision cancer medicine
+Version: 0.1.0
+Date: 2023-04-16
+Authors@R: 
+    c(person(given = "Sigve",
+             family = "Nakken",
+             role = c("aut", "cre"),
+             email = "sigven@ifi.uio.no",
+             comment = c(ORCID = "0000-0001-8468-2050")))
+Maintainer: Sigve Nakken <sigven@ifi.uio.no>
+Description: This data package maintains a vault of literature references
+   for precision cancer medicine, related to biomarkers and genome-wide association
+   studies. The package also allows for retrieving new literature references
+   from identifiers (i.e. PMIDs)
+License: MIT + file LICENSE
+URL: https://github.com/sigven/literatureVault
+BugReports: https://github.com/sigven/literatureVault/issues
+Depends: 
+    R (>= 4.1.0)
+Imports: dplyr,
+         stringr,
+         lgr,
+         tidyr,
+         googledrive,
+         rlang,
+         assertthat,
+         DT
+Suggests: 
+    testthat (>= 3.0.0),
+    rmarkdown,
+    knitr
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.2
+Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr
+Config/testthat/edition: 3

@@ -1,0 +1,136 @@
+chunk <- function(x,n) split(x, factor(sort(rank(x)%%n)))
+
+#' A function that returns a citation with first author, journal and year for a PubMed ID
+#'
+#' @param pmid An array of Pubmed IDs
+#' @param chunk_size Size of PMID chunks
+#'
+#' @export
+#'
+#' @return citation PubMed citation, with first author, journal and year
+#'
+get_citations_pubmed <- function(
+    pmid,
+    chunk_size = 100){
+
+  ## make chunk of maximal 400 PMIDs from input array (limit by EUtils)
+  pmid_chunks <- chunk(
+    pmid, ceiling(length(pmid)/chunk_size))
+  j <- 0
+  all_citations <- data.frame()
+  cat('Retrieving PubMed citations for PMID list, total length', length(pmid))
+  cat('\n')
+  while (j < length(pmid_chunks)) {
+    pmid_chunk <- pmid_chunks[[as.character(j)]]
+    cat(unlist(pmid_chunk),"\n")
+    cat('Processing chunk ',j,' with ',length(pmid_chunk),'PMIDS')
+    cat('\n')
+    pmid_string <- paste(pmid_chunk,collapse = " ")
+    res <- RISmed::EUtilsGet(
+      RISmed::EUtilsSummary(
+        pmid_string, type = "esearch", db = "pubmed", retmax = 5000)
+    )
+
+
+    year <- RISmed::YearPubmed(res)
+    authorlist <- RISmed::Author(res)
+    pmid_list <- RISmed::PMID(res)
+    i <- 1
+    first_author <- c()
+    while (i <= length(authorlist)) {
+
+
+      if (length(authorlist[[i]]) == 5) {
+        first_author <- c(
+          first_author,
+          paste(authorlist[[i]][1,]$LastName," et al.",sep = ""))
+      } else{
+        first_author <- c(
+          first_author, as.character("Unknown et al.")
+        )
+      }
+      i <- i + 1
+    }
+    journal <- RISmed::ISOAbbreviation(res)
+    citations <- data.frame(
+      'pmid' = as.integer(pmid_list),
+      'citation' = paste(
+        first_author, year, journal, sep = ", "),
+      stringsAsFactors = F)
+    citations$link <- paste0(
+      '<a href=\'https://www.ncbi.nlm.nih.gov/pubmed/',
+      citations$pmid,'\' target=\'_blank\'>',
+      citations$citation,'</a>')
+    all_citations <- dplyr::bind_rows(
+      all_citations, citations)
+    j <- j + 1
+  }
+
+  return(all_citations)
+
+}
+
+get_literature <- function(literature_df) {
+
+  stopifnot(!is.na(literature_df))
+  stopifnot(is.data.frame(literature_df))
+  assertable::assert_colnames(
+    literature_df, c("source","source_id"),
+    quiet = T)
+
+  pubmed_source_ids <- literature_df |>
+    dplyr::filter(
+      source == "PubMed") |>
+    dplyr::mutate(
+      source_id = as.character(source_id))
+
+  other_source_ids <- literature_df |>
+    dplyr::filter(source != "PubMed")
+
+
+  if (NROW(pubmed_source_ids) > 0) {
+    pubmed_source_ids <- get_citations_pubmed(
+      pmid = pubmed_source_ids$source_id, chunk_size = 100) |>
+      dplyr::rename(
+        name = citation,
+      ) |>
+      dplyr::mutate(source_id = as.character(pmid)) |>
+      dplyr::select(-pmid) |>
+      dplyr::left_join(
+        pubmed_source_ids, by = "source_id")
+  }
+
+  if (NROW(other_source_ids) > 0) {
+    other_source_ids <- other_source_ids |>
+      dplyr::filter(source != "PubMed") |>
+      dplyr::mutate(name = source_id) |>
+      dplyr::mutate(link = dplyr::case_when(
+        source == "FDA" ~
+          "<a href='https://www.fda.gov/drugs/resources-information-approved-drugs/oncology-cancer-hematologic-malignancies-approval-notifications' target='_blank'>FDA approvals</a>",
+        source == "NCCN" ~
+          "<a href='https://www.nccn.org/guidelines/category_1' target='_blank'>NCCN guidelines</a>",
+        source == "EMA" ~ "<a href='https://www.ema.europa.eu/en/medicines/field_ema_web_categories%253Aname_field/Human' target='_blank'>European Medicines Agency (EMA)</a>",
+        source == "clinicaltrials.gov" ~ paste0(
+          "<a href='https://clinicaltrials.gov/ct2/show/",
+          source_id, "' target='_blank'>",
+          source_id, "</a>")
+      ))
+  }
+
+  all_literature <- pubmed_source_ids |>
+    dplyr::select(source, source_id,
+                  #evidence_id,
+                  dplyr::everything())
+
+  if(NROW(other_source_ids) > 0){
+    all_literature <-
+      other_source_ids |>
+      dplyr::bind_rows(pubmed_source_ids)
+  }
+
+  return(all_literature)
+
+
+}
+
+
