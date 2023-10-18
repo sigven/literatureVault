@@ -7,7 +7,7 @@
 #   dplyr::anti_join(literatureVault::vault, by = "source_id")
 #
 # add_to_vault <- literatureVault:::get_literature(
-#  literature_df = missing, chunk_size = 250
+#  literature_df = missing, chunk_size = 240
 # )
 # #
 # vault <- literatureVault::vault |>

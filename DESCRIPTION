@@ -1,8 +1,8 @@
 Package: literatureVault
 Type: Package
 Title: Biomedical literature reference data for precision cancer medicine
-Version: 0.1.3
-Date: 2023-10-06
+Version: 0.1.4
+Date: 2023-10-18
 Authors@R: 
     c(person(given = "Sigve",
              family = "Nakken",
