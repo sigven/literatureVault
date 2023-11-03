@@ -144,6 +144,26 @@ get_literature <- function(
       dplyr::mutate(source_id = as.character(pmid),
                     source_keywords = keywords,
                     source_mesh_descriptors = mesh_descriptors) |>
+      dplyr::mutate(
+        source_keywords = stringr::str_replace_all(
+          source_keywords, "\\t", " "
+        )
+      ) |>
+      dplyr::mutate(
+        source_keywords = stringr::str_replace_all(
+          source_keywords, "\\n", ""
+        )
+      ) |>
+      dplyr::mutate(
+        source_mesh_descriptors = stringr::str_replace_all(
+          source_mesh_descriptors, "\\t", " "
+        )
+      ) |>
+      dplyr::mutate(
+        source_mesh_descriptors = stringr::str_replace_all(
+          source_mesh_descriptors, "\\n", ""
+        )
+      ) |>
       dplyr::select(-pmid) |>
       dplyr::left_join(
         pubmed_source_ids, by = "source_id")
