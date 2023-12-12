@@ -9,7 +9,7 @@
 # add_to_vault <- literatureVault:::get_literature(
 #  literature_df = missing, chunk_size = 240
 # )
-# #
+# # #
 # vault <- literatureVault::vault |>
 #   dplyr::bind_rows(add_to_vault)
 #
