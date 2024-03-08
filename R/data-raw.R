@@ -1,6 +1,6 @@
 # source_ids <- as.data.frame(
 #  readr::read_csv("data-raw/source_data.csv",
-#                  show_col_types = F)) |>
+#                  show_col_types = F, guess_max = 100000)) |>
 #   dplyr::distinct()
 #
 # missing <- source_ids |>
