@@ -1,16 +1,16 @@
-# source_ids <- as.data.frame(
-#  readr::read_csv("data-raw/source_data.csv",
-#                  show_col_types = F, guess_max = 100000)) |>
-#   dplyr::distinct()
+source_ids <- as.data.frame(
+ readr::read_csv("data-raw/source_data.csv",
+                 show_col_types = F, guess_max = 100000)) |>
+  dplyr::distinct()
+
+missing <- source_ids |>
+  dplyr::anti_join(literatureVault::vault, by = "source_id")
+
+add_to_vault <- literatureVault:::get_literature(
+ literature_df = missing, chunk_size = 240
+)
 #
-# missing <- source_ids |>
-#   dplyr::anti_join(literatureVault::vault, by = "source_id")
-#
-# add_to_vault <- literatureVault:::get_literature(
-#  literature_df = missing, chunk_size = 240
-# )
-# #
-# vault <- literatureVault::vault |>
-#   dplyr::bind_rows(add_to_vault)
-#
-# usethis::use_data(vault, overwrite = T)
+vault <- literatureVault::vault |>
+  dplyr::bind_rows(add_to_vault)
+
+usethis::use_data(vault, overwrite = T)
