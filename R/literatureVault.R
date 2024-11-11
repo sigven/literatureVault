@@ -32,6 +32,7 @@ get_citations_pubmed <- function(
       lgr::lgr$info(
         paste0('Processing chunk ',j,' with ',length(pmid_chunk),' PMIDS'))
       pmid_string <- paste(pmid_chunk,collapse = " ")
+      cat(pmid_string, '\n')
       res <- RISmed::EUtilsGet(
         RISmed::EUtilsSummary(
           pmid_string, type = "esearch", db = "pubmed", retmax = 5000)
@@ -137,7 +138,8 @@ get_literature <- function(
 
   if (NROW(pubmed_source_ids) > 0) {
     pubmed_source_ids <- get_citations_pubmed(
-      pmid = unique(pubmed_source_ids$source_id), chunk_size = chunk_size) |>
+      pmid = unique(pubmed_source_ids$source_id),
+      chunk_size = chunk_size) |>
       dplyr::rename(
         name = citation,
       ) |>
