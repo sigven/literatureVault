@@ -76,9 +76,18 @@ get_citations_pubmed <- function(
       while (i <= length(authorlist)) {
 
         if (length(authorlist[[i]]) == 5) {
-          first_author <- c(
-            first_author,
-            paste(authorlist[[i]][1,]$LastName," et al.",sep = ""))
+          if(!is.na(authorlist[[i]][1,]$LastName)){
+            first_author <- c(
+              first_author,
+              paste(authorlist[[i]][1,]$LastName," et al.",sep = ""))
+          }
+          if(is.na(authorlist[[i]][1,]$LastName) &
+             !is.na(authorlist[[i]][1,]$CollectiveName)){
+            first_author <- c(
+              first_author,
+              authorlist[[i]][1,]$CollectiveName)
+          }
+
         } else{
           first_author <- c(
             first_author, as.character("Unknown et al.")
