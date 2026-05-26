@@ -1,7 +1,7 @@
 Package: literatureVault
 Type: Package
 Title: Biomedical literature reference data for precision cancer medicine
-Version: 0.6.8
+Version: 0.7.0
 Authors@R: 
     c(person(given = "Sigve",
              family = "Nakken",
@@ -30,7 +30,7 @@ Suggests:
     knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
